@@ -24,22 +24,22 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
     };
 
     return (
-        <Card className="w-full max-w-xl mx-auto glass border-white/20 shadow-2xl">
-            <CardHeader className="text-center pb-4">
-                <CardTitle className="text-3xl font-bold text-white" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                    Create Your Brand Identity
+        <Card className="w-full max-w-xl mx-auto bg-white/70 backdrop-blur-xl border-slate-200 shadow-xl">
+            <CardHeader className="text-center pb-6">
+                <CardTitle className="text-3xl font-bold text-slate-900" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                    Create Your Brand
                 </CardTitle>
-                <p className="text-white/70 mt-2">Fill in the details below to generate your unique brand</p>
+                <p className="text-slate-600 mt-2 font-light">Fill in the details to generate your unique identity</p>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 }}
+                        transition={{ delay: 0.1, duration: 0.5 }}
                         className="space-y-2"
                     >
-                        <label htmlFor="brandName" className="text-sm font-semibold text-white/90">
+                        <label htmlFor="brandName" className="text-sm font-semibold text-slate-700">
                             Brand Name
                         </label>
                         <Input
@@ -51,17 +51,17 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                             }
                             required
                             disabled={isLoading}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/40"
+                            className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                         />
                     </motion.div>
 
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
                         className="space-y-2"
                     >
-                        <label htmlFor="description" className="text-sm font-semibold text-white/90">
+                        <label htmlFor="description" className="text-sm font-semibold text-slate-700">
                             Description
                         </label>
                         <Input
@@ -73,17 +73,17 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                             }
                             required
                             disabled={isLoading}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/40"
+                            className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                         />
                     </motion.div>
 
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
                         className="space-y-2"
                     >
-                        <label htmlFor="vibe" className="text-sm font-semibold text-white/90">
+                        <label htmlFor="vibe" className="text-sm font-semibold text-slate-700">
                             Vibe / Style
                         </label>
                         <Input
@@ -95,18 +95,19 @@ export function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
                             }
                             required
                             disabled={isLoading}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:bg-white/20 focus:border-white/40"
+                            className="bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
                         />
                     </motion.div>
 
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
                     >
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-semibold py-6 text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                            variant="gradient"
+                            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold py-6 text-base shadow-lg hover:shadow-xl"
                             disabled={isLoading}
                         >
                             {isLoading ? (

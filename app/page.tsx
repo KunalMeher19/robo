@@ -36,26 +36,43 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+          className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full glass text-white">
-            <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-medium">AI-Powered Brand Creation</span>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm border border-slate-200 shadow-sm"
+          >
+            <Sparkles className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium text-slate-700">AI-Powered Brand Creation</span>
+          </motion.div>
 
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Brand<span className="text-pink-300">AI</span>
-          </h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="text-6xl sm:text-7xl lg:text-8xl font-black text-slate-900 mb-6 tracking-tight"
+            style={{ fontFamily: 'Outfit, sans-serif' }}
+          >
+            Brand<span className="text-blue-600">AI</span>
+          </motion.h1>
 
-          <p className="text-xl sm:text-2xl text-white/90 max-w-2xl mx-auto font-light">
-            Generate a complete brand identity in seconds with the power of AI
-          </p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="text-xl sm:text-2xl text-slate-600 max-w-2xl mx-auto font-light"
+          >
+            Generate a complete brand identity in seconds
+          </motion.p>
         </motion.div>
 
         {/* Content */}
@@ -63,10 +80,10 @@ export default function Home() {
           {!brandData ? (
             <motion.div
               key="form"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
             >
               <BrandForm onSubmit={handleGenerate} isLoading={isLoading} />
               {error && (
@@ -75,7 +92,7 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-6 text-center"
                 >
-                  <div className="inline-block px-6 py-3 rounded-xl bg-red-500/20 backdrop-blur-sm border border-red-500/30 text-red-100">
+                  <div className="inline-block px-6 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700">
                     {error}
                   </div>
                 </motion.div>
@@ -86,12 +103,12 @@ export default function Home() {
               key="showcase"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6 }}
             >
-              <div className="mb-8 text-center">
+              <div className="mb-10 text-center">
                 <button
                   onClick={() => setBrandData(null)}
-                  className="px-6 py-3 rounded-xl glass text-white hover:bg-white/20 transition-all font-medium"
+                  className="px-6 py-3 rounded-xl bg-white/60 backdrop-blur-sm border border-slate-200 text-slate-700 hover:bg-white/80 hover:border-slate-300 transition-all font-medium shadow-sm"
                 >
                   ← Create New Brand
                 </button>
