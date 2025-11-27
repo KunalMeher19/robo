@@ -1,5 +1,9 @@
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Download } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 interface NavbarProps {
     showCreateButton: boolean;
@@ -7,6 +11,72 @@ interface NavbarProps {
 }
 
 export function Navbar({ showCreateButton, onCreateNew }: NavbarProps) {
+    const { data: brandData } = useSelector((state: RootState) => state.brand);
+
+    const handleDownload = async () => {
+        if (!brandData) return;
+
+        const zip = new JSZip();
+        const folder = zip.folder(brandData.brandName.replace(/\s+/g, '_')) || zip;
+
+        // 1. Create Text File
+        const textContent = `
+BRAND IDENTITY: ${brandData.brandName}
+----------------------------------------
+Tagline: ${brandData.tagline}
+Vibe: ${brandData.vibe}
+Description: ${brandData.description}
+
+COLOR PALETTE
+----------------------------------------
+${brandData.colors.join('\n')}
+
+TYPOGRAPHY
+----------------------------------------
+${brandData.typography.map(f => `${f.usage}: ${f.fontFamily}`).join('\n')}
+
+SOCIAL MEDIA STRATEGY
+----------------------------------------
+${brandData.socialPosts.map((post, i) => `
+POST ${i + 1}
+Caption: ${post.caption}
+`).join('\n')}
+    `.trim();
+
+        folder.file('brand_details.txt', textContent);
+
+        // 2. Download Images
+        const downloadImage = async (url: string, filename: string) => {
+            try {
+                // Use proxy to bypass CORS
+                const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(url)}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const blob = await response.blob();
+                folder.file(filename, blob);
+            } catch (error) {
+                console.error(`Failed to download ${filename}`, error);
+            }
+        };
+
+        const promises = [];
+
+        if (brandData.logoUrl) {
+            promises.push(downloadImage(brandData.logoUrl, 'logo.png'));
+        }
+
+        brandData.socialPosts.forEach((post, i) => {
+            if (post.imageUrl) {
+                promises.push(downloadImage(post.imageUrl, `social_post_${i + 1}.png`));
+            }
+        });
+
+        await Promise.all(promises);
+
+        // 3. Generate Zip
+        const content = await zip.generateAsync({ type: 'blob' });
+        saveAs(content, `${brandData.brandName.replace(/\s+/g, '_')}_BrandKit.zip`);
+    };
+
     return (
         <motion.nav
             initial={{ y: -100 }}
@@ -28,19 +98,35 @@ export function Navbar({ showCreateButton, onCreateNew }: NavbarProps) {
                         </h1>
                     </div>
 
-                    {/* Create New Brand Button */}
-                    {showCreateButton && (
-                        <motion.button
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={onCreateNew}
-                            className="px-5 py-2 rounded-xl glass text-gray-300 hover:text-white hover:border-blue-500/50 transition-all duration-300 font-medium border border-white/10 text-sm"
-                        >
-                            + Create New Brand
-                        </motion.button>
-                    )}
+                    {/* Actions */}
+                    <div className="flex items-center gap-4">
+                        {brandData && (
+                            <motion.button
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleDownload}
+                                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 font-medium text-sm flex items-center gap-2 shadow-lg shadow-blue-500/20"
+                            >
+                                <Download className="w-4 h-4" />
+                                Download Brand Kit
+                            </motion.button>
+                        )}
+
+                        {showCreateButton && (
+                            <motion.button
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={onCreateNew}
+                                className="px-5 py-2 rounded-xl glass text-gray-300 hover:text-white hover:border-blue-500/50 transition-all duration-300 font-medium border border-white/10 text-sm"
+                            >
+                                + Create New Brand
+                            </motion.button>
+                        )}
+                    </div>
                 </div>
             </div>
         </motion.nav>

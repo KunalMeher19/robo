@@ -1,11 +1,14 @@
 'use client';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { setBrandData, setLoading, setError, resetBrand } from '@/store/brandSlice';
 import { useState } from 'react';
 import { BrandForm } from '@/components/features/BrandForm';
 import { BrandShowcase } from '@/components/features/BrandShowcase';
 import { LoadingTracker } from '@/components/features/LoadingTracker';
 import { Navbar } from '@/components/layout/Navbar';
-import { BrandIdentity, GenerationRequest } from '@/types';
+import { GenerationRequest } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LoadingStep {
@@ -15,9 +18,9 @@ interface LoadingStep {
 }
 
 export default function Home() {
-  const [brandData, setBrandData] = useState<BrandIdentity | null>(null);
+  const dispatch = useDispatch();
+  const { data: brandData, error } = useSelector((state: RootState) => state.brand);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [loadingSteps, setLoadingSteps] = useState<LoadingStep[]>([]);
 
   const updateStepStatus = (stepId: string, status: 'loading' | 'completed') => {
@@ -28,7 +31,7 @@ export default function Home() {
 
   const handleGenerate = async (request: GenerationRequest) => {
     setIsLoading(true);
-    setError(null);
+    dispatch(setError(null));
 
     // Initialize loading steps
     setLoadingSteps([
@@ -76,19 +79,19 @@ export default function Home() {
 
       // Small delay before showing results
       setTimeout(() => {
-        setBrandData(data);
+        dispatch(setBrandData(data));
         setLoadingSteps([]);
+        setIsLoading(false);
       }, 500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      dispatch(setError(err instanceof Error ? err.message : 'Something went wrong'));
       setLoadingSteps([]);
-    } finally {
       setIsLoading(false);
     }
   };
 
   const handleCreateNew = () => {
-    setBrandData(null);
+    dispatch(resetBrand());
   };
 
   return (
