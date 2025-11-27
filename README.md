@@ -85,3 +85,21 @@ robo/
 ## 📄 License
 
 This project is open source and intended for assessment purposes.
+
+---
+
+## 📝 Technical Write-up
+
+**Architecture & Decisions**
+
+*   **Framework**: Built with **Next.js 15 (App Router)** to leverage React Server Components and modern routing patterns.
+*   **State Management**: Utilized **Redux Toolkit** combined with `redux-persist` (Session Storage). This ensures that generated brand data persists across page reloads, providing a robust user experience without the complexity of a full database backend for this MVP.
+*   **AI Integration**:
+    *   **GPT-4**: Used for generating intelligent brand strategies, taglines, and color/typography recommendations.
+    *   **DALL-E 3**: Integrated for generating high-quality, custom logos and social media lifestyle imagery.
+*   **Asset Management**: Implemented a custom **Proxy API Route** (`/api/proxy-image`) to securely fetch images from OpenAI's servers server-side. This solves CORS issues and enables the client-side "Download Brand Kit" feature (using `JSZip` and `FileSaver`) to bundle all assets into a ZIP file.
+*   **UI/UX**: Designed with **Tailwind CSS** for a responsive, glassmorphism-inspired aesthetic, enhanced with **Framer Motion** for smooth, engaging interactions.
+
+## 🎓 Assignment Note
+
+This project was built for the **AI Builder Intern assignment** under the **"Automation of creative workflows"** track.
