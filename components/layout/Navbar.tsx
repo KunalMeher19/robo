@@ -99,7 +99,7 @@ Caption: ${post.caption}
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4">
                         {brandData && (
                             <motion.button
                                 initial={{ opacity: 0, x: 20 }}
@@ -107,10 +107,11 @@ Caption: ${post.caption}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleDownload}
-                                className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 font-medium text-sm flex items-center gap-2 shadow-lg shadow-blue-500/20"
+                                className="p-2 sm:px-5 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 font-medium text-sm flex items-center gap-2 shadow-lg shadow-blue-500/20"
+                                title="Download Brand Kit"
                             >
-                                <Download className="w-4 h-4" />
-                                Download Brand Kit
+                                <Download className="w-5 h-5 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">Download Brand Kit</span>
                             </motion.button>
                         )}
 
@@ -121,9 +122,11 @@ Caption: ${post.caption}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={onCreateNew}
-                                className="px-5 py-2 rounded-xl glass text-gray-300 hover:text-white hover:border-blue-500/50 transition-all duration-300 font-medium border border-white/10 text-sm"
+                                className="p-2 sm:px-5 sm:py-2 rounded-xl glass text-gray-300 hover:text-white hover:border-blue-500/50 transition-all duration-300 font-medium border border-white/10 text-sm flex items-center gap-2"
+                                title="Create New Brand"
                             >
-                                + Create New Brand
+                                <span className="text-xl sm:text-sm leading-none sm:leading-normal font-bold">+</span>
+                                <span className="hidden sm:inline">Create New Brand</span>
                             </motion.button>
                         )}
                     </div>

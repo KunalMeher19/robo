@@ -17,51 +17,58 @@ export function LoadingTracker({ steps, isVisible }: LoadingTrackerProps) {
         <AnimatePresence>
             {isVisible && (
                 <motion.div
-                    initial={{ opacity: 0, x: 100, y: -20 }}
-                    animate={{ opacity: 1, x: 0, y: 0 }}
-                    exit={{ opacity: 0, x: 100 }}
-                    transition={{ duration: 0.3 }}
-                    className="fixed top-26 right-6 z-50 w-80"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:bg-transparent md:backdrop-blur-none md:p-0 md:block md:inset-auto md:top-26 md:right-6"
                 >
-                    <div className="glass border border-white/10 rounded-2xl p-6 shadow-2xl">
-                        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                            <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
-                            Generating Brand...
-                        </h3>
-                        <div className="space-y-3">
-                            {steps.map((step, index) => (
-                                <motion.div
-                                    key={step.id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="flex items-center gap-3"
-                                >
-                                    <div className="flex-shrink-0">
-                                        {step.status === 'completed' ? (
-                                            <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
-                                                <Check className="w-3 h-3 text-white" />
-                                            </div>
-                                        ) : step.status === 'loading' ? (
-                                            <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
-                                        ) : (
-                                            <div className="w-5 h-5 rounded-full border-2 border-gray-600" />
-                                        )}
-                                    </div>
-                                    <span
-                                        className={`text-sm ${step.status === 'completed'
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-full max-w-sm md:w-80"
+                    >
+                        <div className="glass border border-white/10 rounded-2xl p-6 shadow-2xl">
+                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
+                                Generating Brand...
+                            </h3>
+                            <div className="space-y-3">
+                                {steps.map((step, index) => (
+                                    <motion.div
+                                        key={step.id}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="flex items-center gap-3"
+                                    >
+                                        <div className="flex-shrink-0">
+                                            {step.status === 'completed' ? (
+                                                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                                                    <Check className="w-3 h-3 text-white" />
+                                                </div>
+                                            ) : step.status === 'loading' ? (
+                                                <Loader2 className="w-5 h-5 animate-spin text-blue-400" />
+                                            ) : (
+                                                <div className="w-5 h-5 rounded-full border-2 border-gray-600" />
+                                            )}
+                                        </div>
+                                        <span
+                                            className={`text-sm ${step.status === 'completed'
                                                 ? 'text-green-400'
                                                 : step.status === 'loading'
                                                     ? 'text-blue-400'
                                                     : 'text-gray-500'
-                                            }`}
-                                    >
-                                        {step.label}
-                                    </span>
-                                </motion.div>
-                            ))}
+                                                }`}
+                                        >
+                                            {step.label}
+                                        </span>
+                                    </motion.div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </motion.div>
             )}
         </AnimatePresence>
