@@ -51,7 +51,7 @@ export function BrandShowcase({ data }: BrandShowcaseProps) {
             </motion.div>
 
             {/* Two Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 px-4">
                 {/* Left Column - Brand Assets */}
                 <div className="space-y-8">
                     {/* Logo Section */}
