@@ -21,7 +21,7 @@ export function LoadingTracker({ steps, isVisible }: LoadingTrackerProps) {
                     animate={{ opacity: 1, x: 0, y: 0 }}
                     exit={{ opacity: 0, x: 100 }}
                     transition={{ duration: 0.3 }}
-                    className="fixed top-6 right-6 z-50 w-80"
+                    className="fixed top-16 right-6 z-50 w-80"
                 >
                     <div className="glass border border-white/10 rounded-2xl p-6 shadow-2xl">
                         <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
