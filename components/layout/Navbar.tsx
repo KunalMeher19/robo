@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Download } from 'lucide-react';
+import { Sparkles, Download, Loader2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import JSZip from 'jszip';
@@ -12,15 +13,18 @@ interface NavbarProps {
 
 export function Navbar({ showCreateButton, onCreateNew }: NavbarProps) {
     const { data: brandData } = useSelector((state: RootState) => state.brand);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     const handleDownload = async () => {
-        if (!brandData) return;
+        if (!brandData || isDownloading) return;
+        setIsDownloading(true);
 
-        const zip = new JSZip();
-        const folder = zip.folder(brandData.brandName.replace(/\s+/g, '_')) || zip;
+        try {
+            const zip = new JSZip();
+            const folder = zip.folder(brandData.brandName.replace(/\s+/g, '_')) || zip;
 
-        // 1. Create Text File
-        const textContent = `
+            // 1. Create Text File
+            const textContent = `
 BRAND IDENTITY: ${brandData.brandName}
 ----------------------------------------
 Tagline: ${brandData.tagline}
@@ -43,38 +47,43 @@ Caption: ${post.caption}
 `).join('\n')}
     `.trim();
 
-        folder.file('brand_details.txt', textContent);
+            folder.file('brand_details.txt', textContent);
 
-        // 2. Download Images
-        const downloadImage = async (url: string, filename: string) => {
-            try {
-                // Use proxy to bypass CORS
-                const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(url)}`);
-                if (!response.ok) throw new Error('Network response was not ok');
-                const blob = await response.blob();
-                folder.file(filename, blob);
-            } catch (error) {
-                console.error(`Failed to download ${filename}`, error);
+            // 2. Download Images
+            const downloadImage = async (url: string, filename: string) => {
+                try {
+                    // Use proxy to bypass CORS
+                    const response = await fetch(`/api/proxy-image?url=${encodeURIComponent(url)}`);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const blob = await response.blob();
+                    folder.file(filename, blob);
+                } catch (error) {
+                    console.error(`Failed to download ${filename}`, error);
+                }
+            };
+
+            const promises = [];
+
+            if (brandData.logoUrl) {
+                promises.push(downloadImage(brandData.logoUrl, 'logo.png'));
             }
-        };
 
-        const promises = [];
+            brandData.socialPosts.forEach((post, i) => {
+                if (post.imageUrl) {
+                    promises.push(downloadImage(post.imageUrl, `social_post_${i + 1}.png`));
+                }
+            });
 
-        if (brandData.logoUrl) {
-            promises.push(downloadImage(brandData.logoUrl, 'logo.png'));
+            await Promise.all(promises);
+
+            // 3. Generate Zip
+            const content = await zip.generateAsync({ type: 'blob' });
+            saveAs(content, `${brandData.brandName.replace(/\s+/g, '_')}_BrandKit.zip`);
+        } catch (error) {
+            console.error('Download failed:', error);
+        } finally {
+            setIsDownloading(false);
         }
-
-        brandData.socialPosts.forEach((post, i) => {
-            if (post.imageUrl) {
-                promises.push(downloadImage(post.imageUrl, `social_post_${i + 1}.png`));
-            }
-        });
-
-        await Promise.all(promises);
-
-        // 3. Generate Zip
-        const content = await zip.generateAsync({ type: 'blob' });
-        saveAs(content, `${brandData.brandName.replace(/\s+/g, '_')}_BrandKit.zip`);
     };
 
     return (
@@ -107,11 +116,18 @@ Caption: ${post.caption}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleDownload}
-                                className="p-2 sm:px-5 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 font-medium text-sm flex items-center gap-2 shadow-lg shadow-blue-500/20"
+                                disabled={isDownloading}
+                                className="p-2 sm:px-5 sm:py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white transition-all duration-300 font-medium text-sm flex items-center gap-2 shadow-lg shadow-blue-500/20"
                                 title="Download Brand Kit"
                             >
-                                <Download className="w-5 h-5 sm:w-4 sm:h-4" />
-                                <span className="hidden sm:inline">Download Brand Kit</span>
+                                {isDownloading ? (
+                                    <Loader2 className="w-5 h-5 sm:w-4 sm:h-4 animate-spin" />
+                                ) : (
+                                    <Download className="w-5 h-5 sm:w-4 sm:h-4" />
+                                )}
+                                <span className="hidden sm:inline">
+                                    {isDownloading ? 'Downloading...' : 'Download Brand Kit'}
+                                </span>
                             </motion.button>
                         )}
 
