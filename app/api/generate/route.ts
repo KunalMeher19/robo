@@ -16,9 +16,11 @@ export async function POST(request: Request) {
         // 1. Generate Strategy (Text & Prompts)
         const strategy = await generateBrandStrategy(brandName, description, vibe);
 
-        // 2. Generate Images in Parallel
-        const [logoUrl, socialImageUrl] = await Promise.all([
+        // 2. Generate Images in Parallel (1 logo + 3 social images)
+        const [logoUrl, ...socialImageUrls] = await Promise.all([
             generateImage(strategy.logoPrompt),
+            generateImage(strategy.socialImagePrompt),
+            generateImage(strategy.socialImagePrompt),
             generateImage(strategy.socialImagePrompt),
         ]);
 
@@ -31,7 +33,7 @@ export async function POST(request: Request) {
             logoUrl,
             socialPosts: strategy.socialPosts.map((post: any, index: number) => ({
                 ...post,
-                imageUrl: index === 0 ? socialImageUrl : undefined,
+                imageUrl: socialImageUrls[index],
             })),
         };
 
