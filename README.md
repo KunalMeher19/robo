@@ -1,30 +1,87 @@
 # BrandAI
 
-AI-powered brand identity generator.
+**AI-powered brand identity generator.** Create a complete brand identity in seconds, including strategy, visual assets, and social media content.
 
-## Setup
+[**🚀 Live Demo**](https://robotha.netlify.app/)
 
-1.  Install dependencies:
+## ✨ Features
+
+-   **🤖 AI Strategy**: Generates unique brand names, taglines, descriptions, and vibe analysis using GPT-4.
+-   **🎨 Visual Identity**: Creates custom logos and lifestyle imagery using DALL-E 3.
+-   **📐 Design System**: Automatically suggests harmonious color palettes and typography pairings.
+-   **📱 Social Media Kit**: Generates Instagram-ready post mockups with captions.
+-   **💾 Smart Persistence**: Your generated brand data is automatically saved to your session, so you won't lose it if you reload.
+-   **📦 Download Brand Kit**: Export all your assets (images, logos, and brand details) as a ZIP file with a single click.
+
+## 🛠️ Tech Stack
+
+-   **Framework**: Next.js 15 (App Router)
+-   **Styling**: Tailwind CSS + Framer Motion (Animations)
+-   **State Management**: Redux Toolkit + Redux Persist
+-   **AI Integration**: OpenAI API (GPT-4 & DALL-E 3)
+-   **Utilities**: JSZip, FileSaver
+
+## 🚀 Getting Started
+
+Follow these steps to run the project locally on your machine.
+
+### Prerequisites
+
+-   Node.js 18+ installed.
+-   An OpenAI API key.
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd robo
+    ```
+
+2.  **Install dependencies:**
     ```bash
     npm install
     ```
 
-2.  Set up environment variables:
-    Create a `.env.local` file in the root directory and add your OpenAI API key:
-    ```
-    OPENAI_API_KEY=sk-...
+3.  **Set up Environment Variables:**
+    
+    We have provided a `.env.local.example` file for reference. 
+    
+    Create a new file named `.env.local` in the root directory and add your OpenAI API key:
+
+    ```bash
+    # .env.local
+    OPENAI_API_KEY=sk-your-openai-api-key-here
     ```
 
-3.  Run the development server:
+4.  **Run the development server:**
     ```bash
     npm run dev
     ```
 
-4.  Open [http://localhost:3000](http://localhost:3000) with your browser.
+5.  **Open the app:**
+    Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Features
+## 📂 Folder Structure
 
--   **Brand Strategy**: Generates tagline, description, and vibe analysis using GPT-4.
--   **Visual Identity**: Generates logo and social media lifestyle images using DALL-E 3.
--   **Design System**: Suggests color palettes and typography.
--   **Social Media**: Creates mockups for Instagram posts.
+```
+robo/
+├── app/                    # Next.js App Router pages and API routes
+│   ├── api/                # Backend API routes (generate, proxy-image)
+│   ├── layout.tsx          # Root layout with ReduxProvider
+│   └── page.tsx            # Main application page
+├── components/             # React components
+│   ├── features/           # Feature-specific components (BrandForm, Showcase)
+│   ├── layout/             # Layout components (Navbar)
+│   ├── providers/          # Context providers (Redux)
+│   └── ui/                 # Reusable UI components (Button, Card, Input)
+├── lib/                    # Utility functions and helpers
+├── services/               # External service integrations (OpenAI)
+├── store/                  # Redux store and slices
+├── types/                  # TypeScript type definitions
+└── public/                 # Static assets
+```
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
