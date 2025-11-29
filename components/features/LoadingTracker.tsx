@@ -20,14 +20,14 @@ export function LoadingTracker({ steps, isVisible }: LoadingTrackerProps) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 md:bg-transparent md:backdrop-blur-none md:p-0 md:block md:inset-auto md:top-26 md:right-6"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
                 >
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         transition={{ duration: 0.3 }}
-                        className="w-full max-w-sm md:w-80"
+                        className="w-full max-w-sm"
                     >
                         <div className="glass border border-white/10 rounded-2xl p-6 shadow-2xl">
                             <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">

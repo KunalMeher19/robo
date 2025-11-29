@@ -53,10 +53,7 @@ export default function Home() {
 
       if (!response.ok) throw new Error('Failed to generate brand strategy');
 
-      const data = await response.json();
-
-      // Update UI with text data immediately
-      dispatch(setBrandData(data));
+      const strategyData = await response.json();
 
       // Mark text steps as completed
       updateStepStatus('strategy', 'completed');
@@ -69,55 +66,59 @@ export default function Home() {
       updateStepStatus('social', 'loading');
 
       // 2. Generate Images in Parallel
-      const imagePromises = [];
+      const logoPromise = strategyData.logoPrompt
+        ? fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: strategyData.logoPrompt }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.imageUrl) {
+              updateStepStatus('logo', 'completed');
+              return data.imageUrl;
+            }
+            return undefined;
+          })
+          .catch(console.error)
+        : Promise.resolve(undefined);
 
-      // Logo Generation
-      if (data.logoPrompt) {
-        imagePromises.push(
+      const socialPromises = strategyData.socialImagePrompt
+        ? Array(3).fill(null).map((_, i) =>
           fetch('/api/generate-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: data.logoPrompt }),
+            body: JSON.stringify({ prompt: strategyData.socialImagePrompt }),
           })
             .then(res => res.json())
-            .then(imgData => {
-              if (imgData.imageUrl) {
-                dispatch(updateLogoUrl(imgData.imageUrl));
-                updateStepStatus('logo', 'completed');
-              }
+            .then(data => {
+              // We don't have individual steps for each social image, so just wait for all
+              return data.imageUrl;
             })
             .catch(console.error)
-        );
-      }
+        )
+        : [];
 
-      // Social Images Generation
-      if (data.socialImagePrompt) {
-        // Generate 3 social images
-        for (let i = 0; i < 3; i++) {
-          imagePromises.push(
-            fetch('/api/generate-image', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt: data.socialImagePrompt }),
-            })
-              .then(res => res.json())
-              .then(imgData => {
-                if (imgData.imageUrl) {
-                  dispatch(updateSocialImage({ index: i, imageUrl: imgData.imageUrl }));
-                }
-              })
-              .catch(console.error)
-          );
-        }
-      }
-
-      // Wait for all images (or at least trigger them)
-      await Promise.all(imagePromises);
+      const [logoUrl, ...socialImageUrls] = await Promise.all([
+        logoPromise,
+        ...socialPromises
+      ]);
 
       updateStepStatus('social', 'completed');
 
-      // Small delay to ensure UI updates are smooth
+      // 3. Construct Final Data
+      const finalData = {
+        ...strategyData,
+        logoUrl,
+        socialPosts: strategyData.socialPosts.map((post: any, index: number) => ({
+          ...post,
+          imageUrl: socialImageUrls[index],
+        })),
+      };
+
+      // Small delay to ensure UI updates are smooth before showing result
       setTimeout(() => {
+        dispatch(setBrandData(finalData));
         setLoadingSteps([]);
         setIsLoading(false);
       }, 500);
