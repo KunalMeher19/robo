@@ -21,6 +21,16 @@ const brandSlice = createSlice({
             state.data = action.payload;
             state.error = null;
         },
+        updateLogoUrl: (state, action: PayloadAction<string>) => {
+            if (state.data) {
+                state.data.logoUrl = action.payload;
+            }
+        },
+        updateSocialImage: (state, action: PayloadAction<{ index: number; imageUrl: string }>) => {
+            if (state.data && state.data.socialPosts[action.payload.index]) {
+                state.data.socialPosts[action.payload.index].imageUrl = action.payload.imageUrl;
+            }
+        },
         setLoading: (state, action: PayloadAction<boolean>) => {
             state.isLoading = action.payload;
         },
@@ -36,5 +46,5 @@ const brandSlice = createSlice({
     },
 });
 
-export const { setBrandData, setLoading, setError, resetBrand } = brandSlice.actions;
+export const { setBrandData, updateLogoUrl, updateSocialImage, setLoading, setError, resetBrand } = brandSlice.actions;
 export default brandSlice.reducer;

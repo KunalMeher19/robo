@@ -2,7 +2,7 @@
 
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
-import { setBrandData, setLoading, setError, resetBrand } from '@/store/brandSlice';
+import { setBrandData, updateLogoUrl, updateSocialImage, setLoading, setError, resetBrand } from '@/store/brandSlice';
 import { useState } from 'react';
 import { BrandForm } from '@/components/features/BrandForm';
 import { BrandShowcase } from '@/components/features/BrandShowcase';
@@ -35,55 +35,95 @@ export default function Home() {
 
     // Initialize loading steps
     setLoadingSteps([
-      { id: 'strategy', label: 'Generating brand strategy...', status: 'loading' },
-      { id: 'tagline', label: 'Creating tagline...', status: 'pending' },
+      { id: 'strategy', label: 'Developing brand strategy...', status: 'loading' },
+      { id: 'tagline', label: 'Crafting tagline...', status: 'pending' },
       { id: 'colors', label: 'Selecting color palette...', status: 'pending' },
       { id: 'typography', label: 'Choosing typography...', status: 'pending' },
-      { id: 'logo', label: 'Generating logo...', status: 'pending' },
-      { id: 'social', label: 'Creating social media images...', status: 'pending' },
+      { id: 'logo', label: 'Designing logo...', status: 'pending' },
+      { id: 'social', label: 'Creating social media assets...', status: 'pending' },
     ]);
 
     try {
-      // Simulate step progression
-      setTimeout(() => updateStepStatus('strategy', 'completed'), 1000);
-      setTimeout(() => {
-        updateStepStatus('tagline', 'loading');
-        setTimeout(() => updateStepStatus('tagline', 'completed'), 500);
-      }, 1000);
-      setTimeout(() => {
-        updateStepStatus('colors', 'loading');
-        setTimeout(() => updateStepStatus('colors', 'completed'), 500);
-      }, 1500);
-      setTimeout(() => {
-        updateStepStatus('typography', 'loading');
-        setTimeout(() => updateStepStatus('typography', 'completed'), 500);
-      }, 2000);
-      setTimeout(() => updateStepStatus('logo', 'loading'), 2500);
-      setTimeout(() => updateStepStatus('social', 'loading'), 5000);
-
+      // 1. Generate Strategy (Text)
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate brand identity');
-      }
+      if (!response.ok) throw new Error('Failed to generate brand strategy');
 
       const data = await response.json();
 
-      // Complete all steps
-      updateStepStatus('logo', 'completed');
+      // Update UI with text data immediately
+      dispatch(setBrandData(data));
+
+      // Mark text steps as completed
+      updateStepStatus('strategy', 'completed');
+      updateStepStatus('tagline', 'completed');
+      updateStepStatus('colors', 'completed');
+      updateStepStatus('typography', 'completed');
+
+      // Start image generation
+      updateStepStatus('logo', 'loading');
+      updateStepStatus('social', 'loading');
+
+      // 2. Generate Images in Parallel
+      const imagePromises = [];
+
+      // Logo Generation
+      if (data.logoPrompt) {
+        imagePromises.push(
+          fetch('/api/generate-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: data.logoPrompt }),
+          })
+            .then(res => res.json())
+            .then(imgData => {
+              if (imgData.imageUrl) {
+                dispatch(updateLogoUrl(imgData.imageUrl));
+                updateStepStatus('logo', 'completed');
+              }
+            })
+            .catch(console.error)
+        );
+      }
+
+      // Social Images Generation
+      if (data.socialImagePrompt) {
+        // Generate 3 social images
+        for (let i = 0; i < 3; i++) {
+          imagePromises.push(
+            fetch('/api/generate-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ prompt: data.socialImagePrompt }),
+            })
+              .then(res => res.json())
+              .then(imgData => {
+                if (imgData.imageUrl) {
+                  dispatch(updateSocialImage({ index: i, imageUrl: imgData.imageUrl }));
+                }
+              })
+              .catch(console.error)
+          );
+        }
+      }
+
+      // Wait for all images (or at least trigger them)
+      await Promise.all(imagePromises);
+
       updateStepStatus('social', 'completed');
 
-      // Small delay before showing results
+      // Small delay to ensure UI updates are smooth
       setTimeout(() => {
-        dispatch(setBrandData(data));
         setLoadingSteps([]);
         setIsLoading(false);
       }, 500);
+
     } catch (err) {
+      console.error(err);
       dispatch(setError(err instanceof Error ? err.message : 'Something went wrong'));
       setLoadingSteps([]);
       setIsLoading(false);
